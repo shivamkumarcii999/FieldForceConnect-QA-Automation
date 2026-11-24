@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Formal Defect Report - Field Force Connect</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 15mm 18mm 15mm;
+      @bottom-right {
+        content: counter(page) " of " counter(pages);
+      }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #2c3e50;
+      line-height: 1.5;
+      margin: 0;
+      padding: 20px;
+      background-color: #ffffff;
+      font-size: 13px;
+    }
+    .header-container {
+      border-bottom: 3px solid #2b5797;
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .header-title h1 {
+      color: #1a365d;
+      margin: 0 0 5px 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .header-title p {
+      margin: 2px 0;
+      color: #555;
+      font-size: 13px;
+    }
+    .badge-doc {
+      background-color: #2b5797;
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    h2 {
+      color: #2b5797;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 6px;
+      margin-top: 25px;
+      margin-bottom: 12px;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    h3 {
+      color: #1e293b;
+      margin: 0 0 8px 0;
+      font-size: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 20px 0;
+      font-size: 12px;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 8px 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #f1f5f9;
+      color: #334155;
+      font-weight: 600;
+    }
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-major { background-color: #fee2e2; color: #991b1b; }
+    .badge-moderate { background-color: #fef3c7; color: #92400e; }
+    .badge-minor { background-color: #e0f2fe; color: #075985; }
+    .badge-p1 { background-color: #fee2e2; color: #b91c1c; font-weight: 700; }
+    .badge-p2 { background-color: #ffedd5; color: #c2410c; }
+    .badge-p3 { background-color: #f1f5f9; color: #475569; }
+    .badge-open { background-color: #dcfce7; color: #166534; }
+    
+    .defect-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      background-color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      page-break-inside: avoid;
+    }
+    .defect-header {
+      background-color: #f8fafc;
+      padding: 10px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .defect-id {
+      font-weight: 700;
+      color: #1e3a8a;
+      font-size: 13px;
+    }
+    .defect-body {
+      padding: 12px 14px;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+      background-color: #f8fafc;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+    .meta-item strong {
+      color: #64748b;
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+    .section-title {
+      font-weight: 600;
+      color: #334155;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    ol {
+      margin: 4px 0 10px 20px;
+      padding: 0;
+    }
+    ol li {
+      margin-bottom: 3px;
+    }
+    .result-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 8px 0;
+    }
+    .expected-box {
+      background-color: #f0fdf4;
+      border-left: 3px solid #22c55e;
+      padding: 8px 10px;
+      border-radius: 0 4px 4px 0;
+      font-size: 11.5px;
+    }
+    .actual-box {
+      background-color: #fef2f2;
+      border-left: 3px solid #ef4444;
+      padding: 8px 10px;
+      border-radius: 0 4px 4px 0;
+      font-size: 11.5px;
+    }
+    .suggested-fix {
+      background-color: #eff6ff;
+      border-left: 3px solid #3b82f6;
+      padding: 8px 10px;
+      border-radius: 0 4px 4px 0;
+      font-size: 11.5px;
+      margin-top: 8px;
+    }
+    .footer-note {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-container">
+    <div class="header-title">
+      <h1>Formal Defect & Bug Report</h1>
+      <p><strong>Application:</strong> Field Force Connect (<a href="https://test.fieldforceconnect.com/">https://test.fieldforceconnect.com/</a>)</p>
+      <p><strong>Prepared For:</strong> Nimap Infotech QA Technical Evaluation</p>
+      <p><strong>Evaluation Track:</strong> QA Manual & Automation Machine Test | <strong>Date:</strong> November 2026</p>
+    </div>
+    <div>
+      <span class="badge-doc">APPROVED DEFECT LOG</span>
+    </div>
+  </div>
+
+  <h2>1. Executive Summary & Defect Metrics</h2>
+  <p>
+    Comprehensive exploratory, functional, and boundary validation testing was conducted across the <strong>Sign Up</strong>, <strong>Forgot Password</strong>, <strong>Sign with OTP</strong>, <strong>Login</strong>, <strong>Punch In</strong>, and <strong>Customer Management</strong> modules of Field Force Connect. A total of <strong>8 defects</strong> were discovered and categorized below.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Severity</th>
+        <th style="text-align:center;">High Priority (P1)</th>
+        <th style="text-align:center;">Medium Priority (P2)</th>
+        <th style="text-align:center;">Low Priority (P3)</th>
+        <th style="text-align:center;">Total Defects</th>
+        <th style="text-align:center;">Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Major</strong></td>
+        <td style="text-align:center;"><span class="badge badge-p1">2</span></td>
+        <td style="text-align:center;"><span class="badge badge-p2">3</span></td>
+        <td style="text-align:center;">0</td>
+        <td style="text-align:center;"><strong>5</strong></td>
+        <td style="text-align:center;">62.5%</td>
+      </tr>
+      <tr>
+        <td><strong>Moderate</strong></td>
+        <td style="text-align:center;">0</td>
+        <td style="text-align:center;"><span class="badge badge-p2">2</span></td>
+        <td style="text-align:center;">0</td>
+        <td style="text-align:center;"><strong>2</strong></td>
+        <td style="text-align:center;">25.0%</td>
+      </tr>
+      <tr>
+        <td><strong>Minor</strong></td>
+        <td style="text-align:center;">0</td>
+        <td style="text-align:center;">0</td>
+        <td style="text-align:center;"><span class="badge badge-p3">1</span></td>
+        <td style="text-align:center;"><strong>1</strong></td>
+        <td style="text-align:center;">12.5%</td>
+      </tr>
+      <tr style="font-weight:bold; background-color:#e2e8f0;">
+        <td>Total</td>
+        <td style="text-align:center;">2</td>
+        <td style="text-align:center;">5</td>
+        <td style="text-align:center;">1</td>
+        <td style="text-align:center;">8</td>
+        <td style="text-align:center;">100%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2. Defect Summary Register</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Bug ID</th>
+        <th>Module</th>
+        <th>Defect Title</th>
+        <th>Severity</th>
+        <th>Priority</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>BUG_FFC_001</strong></td>
+        <td>Authentication</td>
+        <td>Password maximum length capped at 12 characters restricts secure passwords</td>
+        <td><span class="badge badge-major">Major</span></td>
+        <td><span class="badge badge-p2">P2</span></td>
+        <td><span class="badge badge-open">Open</span></td>
+      </tr>
+      <tr>
+        <td><strong>BUG_FFC_002</strong></td>
+        <td>Login</td>
+        <td>Absence of Password Visibility (Eye) Toggle on Password fields</td>
+        <td><span class="badge badge-moderate">Moderate</span></td>
+        <td><span class="badge badge-p3">P3</span></td>
+        <td><span class="badge badge-open">Open</span></td>
+      </tr>
+      <tr>
+        <td><strong>BUG_FFC_003</strong></td>
+        <td>Sign with OTP</td>
+        <td>4-Digit OTP input does not support clipboard paste across input boxes</td>
+        <td><span class="badge badge-moderate">Moderate</span></td>
+        <td><span class="badge badge-p2">P2</span></td>
+        <td><span class="badge badge-open">Open</span></td>
+      </tr>
+      <tr>
+        <td><strong>BUG_FFC_004</strong></td>
+        <td>Sign Up</td>
+        <td>Form submit button remains silently disabled without highlighting invalid fields</td>
+        <td><span class="badge badge-major">Major</span></td>
+        <td><span class="badge badge-p2">P2</span></td>
+        <td><span class="badge badge-open">Open</span></td>
+      </tr>
+      <tr>
+        <td><strong>BUG_FFC_005</strong></td>
+        <td>Forgot Password</td>
+        <td>Case-sensitivity in Email comparison triggers 'Failed to send OTP'</td>
+        <td><span class="badge badge-major">Major</span></td>
+        <td><span class="badge badge-p1">P1</span></td>
+        <td><span class="badge badge-open">Open</span></td>
+      </tr>
+      <tr>
+        <td><strong>BUG_FFC_006</strong></td>
+        <td>Punch In</td>
+        <td>Toast Notification auto-dismiss duration is too brief (&lt; 2 seconds)</td>
+        <td><span class="badge badge-minor">Minor</span></td>
+        <td><span class="badge badge-p3">P3</span></td>
+        <td><span class="badge badge-open">Open</span></td>
+      </tr>
+      <tr>
+        <td><strong>BUG_FFC_007</strong></td>
+        <td>Add Customer</td>
+        <td>Mobile Number field allows non-numeric characters on clipboard paste</td>
+        <td><span class="badge badge-major">Major</span></td>
+        <td><span class="badge badge-p2">P2</span></td>
+        <td><span class="badge badge-open">Open</span></td>
+      </tr>
+      <tr>
+        <td><strong>BUG_FFC_008</strong></td>
+        <td>Session / Auth</td>
+        <td>Session token expiration results in white blank screen without redirect</td>
+        <td><span class="badge badge-major">Major</span></td>
+        <td><span class="badge badge-p1">P1</span></td>
+        <td><span class="badge badge-open">Open</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3. Detailed Defect Specifications</h2>
+
+  <!-- BUG 1 -->
+  <div class="defect-card">
+    <div class="defect-header">
+      <span class="defect-id">BUG_FFC_001: Password maximum length capped at 12 characters</span>
+      <div>
+        <span class="badge badge-major">Major</span>
+        <span class="badge badge-p2">Priority P2</span>
+      </div>
+    </div>
+    <div class="defect-body">
+      <div class="meta-grid">
+        <div class="meta-item"><strong>Module</strong>Authentication (/auth/login)</div>
+        <div class="meta-item"><strong>Environment</strong>Chrome 120+, Windows 11</div>
+        <div class="meta-item"><strong>Reproducibility</strong>100% (Always)</div>
+        <div class="meta-item"><strong>Status</strong>Open</div>
+      </div>
+      <div class="section-title">Steps to Reproduce:</div>
+      <ol>
+        <li>Navigate to <code>https://test.fieldforceconnect.com/auth/login</code></li>
+        <li>In the Password input field, enter a strong passphrase longer than 12 characters (e.g., <code>NimapTechSecure@2026!</code>).</li>
+        <li>Observe the inline validation message under the password box.</li>
+      </ol>
+      <div class="result-box">
+        <div class="expected-box">
+          <strong>Expected Result:</strong><br>
+          Per NIST SP 800-63B standards, modern applications should support passwords/passphrases up to at least 64 characters to accommodate password managers and high entropy passwords.
+        </div>
+        <div class="actual-box">
+          <strong>Actual Result:</strong><br>
+          Inline error message triggers: <em>"Password cannot exceed 12 characters"</em>. Form submission is blocked.
+        </div>
+      </div>
+      <div class="suggested-fix">
+        <strong>Suggested Remediation:</strong> Update React Hook Form constraint to <code>maxLength: { value: 64, message: "Password cannot exceed 64 characters" }</code> and adjust the backend hashing schema accordingly.
+      </div>
+    </div>
+  </div>
+
+  <!-- BUG 2 -->
+  <div class="defect-card">
+    <div class="defect-header">
+      <span class="defect-id">BUG_FFC_002: Absence of Password Visibility Toggle</span>
+      <div>
+        <span class="badge badge-moderate">Moderate</span>
+        <span class="badge badge-p3">Priority P3</span>
+      </div>
+    </div>
+    <div class="defect-body">
+      <div class="meta-grid">
+        <div class="meta-item"><strong>Module</strong>Login (/auth/login)</div>
+        <div class="meta-item"><strong>Environment</strong>Cross-Browser</div>
+        <div class="meta-item"><strong>Reproducibility</strong>100% (Design Flaw)</div>
+        <div class="meta-item"><strong>Status</strong>Open</div>
+      </div>
+      <div class="section-title">Steps to Reproduce:</div>
+      <ol>
+        <li>Navigate to <code>https://test.fieldforceconnect.com/auth/login</code></li>
+        <li>Type a complex password containing mixed case, numbers, and symbols.</li>
+        <li>Look for an eye icon at the end of the input field to verify typed characters.</li>
+      </ol>
+      <div class="result-box">
+        <div class="expected-box">
+          <strong>Expected Result:</strong><br>
+          An eye icon toggle should allow users to toggle between <code>type="password"</code> and <code>type="text"</code> to verify inputs before submission.
+        </div>
+        <div class="actual-box">
+          <strong>Actual Result:</strong><br>
+          No eye visibility toggle icon exists. Passwords remain permanently masked, causing unnecessary failed login attempts.
+        </div>
+      </div>
+      <div class="suggested-fix">
+        <strong>Suggested Remediation:</strong> Include Material-UI <code>InputAdornment</code> with an eye icon button in <code>Login-bCrUzcYN.js</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- BUG 3 -->
+  <div class="defect-card">
+    <div class="defect-header">
+      <span class="defect-id">BUG_FFC_003: 4-Digit OTP input does not support clipboard paste</span>
+      <div>
+        <span class="badge badge-moderate">Moderate</span>
+        <span class="badge badge-p2">Priority P2</span>
+      </div>
+    </div>
+    <div class="defect-body">
+      <div class="meta-grid">
+        <div class="meta-item"><strong>Module</strong>Sign with OTP (/auth/otp-verification)</div>
+        <div class="meta-item"><strong>Environment</strong>Chrome, Windows 11</div>
+        <div class="meta-item"><strong>Reproducibility</strong>100%</div>
+        <div class="meta-item"><strong>Status</strong>Open</div>
+      </div>
+      <div class="section-title">Steps to Reproduce:</div>
+      <ol>
+        <li>Initiate OTP login and copy the received 4-digit code (e.g. <code>4821</code>) to clipboard.</li>
+        <li>Navigate to <code>/auth/otp-verification</code>.</li>
+        <li>Focus the first digit box and press <code>Ctrl+V</code>.</li>
+      </ol>
+      <div class="result-box">
+        <div class="expected-box">
+          <strong>Expected Result:</strong><br>
+          Pasting should distribute the 4 characters across Box 1 ('4'), Box 2 ('8'), Box 3 ('2'), and Box 4 ('1').
+        </div>
+        <div class="actual-box">
+          <strong>Actual Result:</strong><br>
+          Only the first character ('4') is pasted into Box 1; the remaining digits are discarded. User must manually type each box.
+        </div>
+      </div>
+      <div class="suggested-fix">
+        <strong>Suggested Remediation:</strong> Add an <code>onPaste</code> handler to the OTP input component to extract <code>clipboardData.getData('text')</code> and set all 4 digits simultaneously.
+      </div>
+    </div>
+  </div>
+
+  <!-- BUG 4 -->
+  <div class="defect-card">
+    <div class="defect-header">
+      <span class="defect-id">BUG_FFC_004: Sign Up Submit button remains silently disabled</span>
+      <div>
+        <span class="badge badge-major">Major</span>
+        <span class="badge badge-p2">Priority P2</span>
+      </div>
+    </div>
+    <div class="defect-body">
+      <div class="meta-grid">
+        <div class="meta-item"><strong>Module</strong>Sign Up (/auth/register)</div>
+        <div class="meta-item"><strong>Environment</strong>Web Application</div>
+        <div class="meta-item"><strong>Reproducibility</strong>100%</div>
+        <div class="meta-item"><strong>Status</strong>Open</div>
+      </div>
+      <div class="section-title">Steps to Reproduce:</div>
+      <ol>
+        <li>Navigate to <code>https://test.fieldforceconnect.com/auth/register</code></li>
+        <li>Enter Company Name, Contact Person Name, Mobile Number, and Email ID.</li>
+        <li>Leave Timezone or Currency untouched if pre-selection is cleared.</li>
+        <li>Attempt clicking 'Submit'.</li>
+      </ol>
+      <div class="result-box">
+        <div class="expected-box">
+          <strong>Expected Result:</strong><br>
+          Form submit button should either remain enabled and highlight missing fields upon clicking, or display a helpful tooltip explaining what is missing.
+        </div>
+        <div class="actual-box">
+          <strong>Actual Result:</strong><br>
+          Submit button remains grayed out and inactive (<code>disabled={!isValid}</code>) without explaining which field is invalid.
+        </div>
+      </div>
+      <div class="suggested-fix">
+        <strong>Suggested Remediation:</strong> Keep the submit button clickable and invoke <code>trigger()</code> on submit to show red validation borders under invalid fields.
+      </div>
+    </div>
+  </div>
+
+  <!-- BUG 5 -->
+  <div class="defect-card">
+    <div class="defect-header">
+      <span class="defect-id">BUG_FFC_005: Case-sensitive Email comparison on Forgot Password</span>
+      <div>
+        <span class="badge badge-major">Major</span>
+        <span class="badge badge-p1">Priority P1</span>
+      </div>
+    </div>
+    <div class="defect-body">
+      <div class="meta-grid">
+        <div class="meta-item"><strong>Module</strong>Forgot Password (/auth/forget-password)</div>
+        <div class="meta-item"><strong>Environment</strong>All Platforms</div>
+        <div class="meta-item"><strong>Reproducibility</strong>100%</div>
+        <div class="meta-item"><strong>Status</strong>Open</div>
+      </div>
+      <div class="section-title">Steps to Reproduce:</div>
+      <ol>
+        <li>Navigate to <code>https://test.fieldforceconnect.com/auth/forget-password</code></li>
+        <li>Enter a registered user's email with capital letters (e.g., <code>Tester@FieldForce.com</code>).</li>
+        <li>Click 'Submit'.</li>
+      </ol>
+      <div class="result-box">
+        <div class="expected-box">
+          <strong>Expected Result:</strong><br>
+          Email addresses are case-insensitive. System should normalize to lowercase and dispatch password reset OTP.
+        </div>
+        <div class="actual-box">
+          <strong>Actual Result:</strong><br>
+          API returns 400/404 error and toast alert displays: <em>"Failed to send OTP"</em>.
+        </div>
+      </div>
+      <div class="suggested-fix">
+        <strong>Suggested Remediation:</strong> Normalize <code>emailOrMob.trim().toLowerCase()</code> prior to API dispatch.
+      </div>
+    </div>
+  </div>
+
+  <!-- BUG 6 -->
+  <div class="defect-card">
+    <div class="defect-header">
+      <span class="defect-id">BUG_FFC_006: Punch In Toast auto-dismiss duration is too brief</span>
+      <div>
+        <span class="badge badge-minor">Minor</span>
+        <span class="badge badge-p3">Priority P3</span>
+      </div>
+    </div>
+    <div class="defect-body">
+      <div class="meta-grid">
+        <div class="meta-item"><strong>Module</strong>Attendance / Punch In</div>
+        <div class="meta-item"><strong>Environment</strong>Dashboard</div>
+        <div class="meta-item"><strong>Reproducibility</strong>100%</div>
+        <div class="meta-item"><strong>Status</strong>Open</div>
+      </div>
+      <div class="section-title">Steps to Reproduce:</div>
+      <ol>
+        <li>Log in and view the Dashboard.</li>
+        <li>Click 'Punch In' button and confirm.</li>
+        <li>Observe the duration of the confirmation popup toast.</li>
+      </ol>
+      <div class="result-box">
+        <div class="expected-box">
+          <strong>Expected Result:</strong><br>
+          Toast message should remain visible for at least 4-5 seconds and include a manual close button.
+        </div>
+        <div class="actual-box">
+          <strong>Actual Result:</strong><br>
+          Toast disappears within 1.5 - 2 seconds, causing users on slower devices to miss confirmation.
+        </div>
+      </div>
+      <div class="suggested-fix">
+        <strong>Suggested Remediation:</strong> Set toast configuration duration to <code>duration: 4000</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- BUG 7 -->
+  <div class="defect-card">
+    <div class="defect-header">
+      <span class="defect-id">BUG_FFC_007: Add Customer Mobile field allows non-numeric characters on paste</span>
+      <div>
+        <span class="badge badge-major">Major</span>
+        <span class="badge badge-p2">Priority P2</span>
+      </div>
+    </div>
+    <div class="defect-body">
+      <div class="meta-grid">
+        <div class="meta-item"><strong>Module</strong>Customer Management (/customers)</div>
+        <div class="meta-item"><strong>Environment</strong>Web Application</div>
+        <div class="meta-item"><strong>Reproducibility</strong>100%</div>
+        <div class="meta-item"><strong>Status</strong>Open</div>
+      </div>
+      <div class="section-title">Steps to Reproduce:</div>
+      <ol>
+        <li>Navigate to <code>/customers</code> and open 'New Customer'.</li>
+        <li>Copy string <code>"98765-ABC-12"</code> to clipboard.</li>
+        <li>Paste into the Mobile Number input field and click 'Submit'.</li>
+      </ol>
+      <div class="result-box">
+        <div class="expected-box">
+          <strong>Expected Result:</strong><br>
+          Paste handler should strip non-digits or show inline error: <em>"Mobile number must contain digits only"</em>.
+        </div>
+        <div class="actual-box">
+          <strong>Actual Result:</strong><br>
+          Field accepts non-numeric characters, causing form submission to fail with an unhandled server 500 error.
+        </div>
+      </div>
+      <div class="suggested-fix">
+        <strong>Suggested Remediation:</strong> Implement regex input sanitizer <code>e.target.value.replace(/\D/g, '')</code> on paste/change handler.
+      </div>
+    </div>
+  </div>
+
+  <!-- BUG 8 -->
+  <div class="defect-card">
+    <div class="defect-header">
+      <span class="defect-id">BUG_FFC_008: Expired session token leads to blank white screen</span>
+      <div>
+        <span class="badge badge-major">Major</span>
+        <span class="badge badge-p1">Priority P1</span>
+      </div>
+    </div>
+    <div class="defect-body">
+      <div class="meta-grid">
+        <div class="meta-item"><strong>Module</strong>Session Management</div>
+        <div class="meta-item"><strong>Environment</strong>All Browsers</div>
+        <div class="meta-item"><strong>Reproducibility</strong>100%</div>
+        <div class="meta-item"><strong>Status</strong>Open</div>
+      </div>
+      <div class="section-title">Steps to Reproduce:</div>
+      <ol>
+        <li>Log into Dashboard.</li>
+        <li>Delete <code>currentUser</code> cookie in browser storage to simulate expired session.</li>
+        <li>Click any sidebar navigation link.</li>
+      </ol>
+      <div class="result-box">
+        <div class="expected-box">
+          <strong>Expected Result:</strong><br>
+          Application routes user back to <code>/auth/login</code> with session expired notification.
+        </div>
+        <div class="actual-box">
+          <strong>Actual Result:</strong><br>
+          Application crashes to a blank white screen with console error: <em>"TypeError: Cannot read properties of null (reading 'roles')"</em>.
+        </div>
+      </div>
+      <div class="suggested-fix">
+        <strong>Suggested Remediation:</strong> Add Axios HTTP 401 response interceptor and React Error Boundary to catch null session objects.
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Field Force Connect QA Automation & Machine Test Evaluation | Nimap Infotech | Confidential QA Documentation
+  </div>
+
+</body>
+</html>
