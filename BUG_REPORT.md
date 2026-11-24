@@ -1,192 +1,200 @@
-# Formal Defect Report - Field Force Connect
+# Formal Software Defect Report (IEEE 829 Standard)
 **Target Application:** [https://test.fieldforceconnect.com/](https://test.fieldforceconnect.com/)  
-**Document Version:** 1.0.0  
-**Prepared For:** Nimap Machine Test  
-**Author:** QA Engineering Team  
-**Date:** November 2026  
-**Status:** Approved for Review  
+**Organization:** Nimap Infotech QA Technical Assessment  
+**Document ID:** `FFC-QA-BDR-2026-V1.0`  
+**Evaluation Track:** QA Automation + Manual Machine Test  
+**Date:** November 24, 2026  
+**Document Status:** Approved QA Defect Log  
 
 ---
 
-## 1. Executive Defect Summary
+## 1. Document Control & Test Environment
 
-During the functional, validation, and exploratory testing of **Field Force Connect** across the core authentication, attendance, and customer management modules, a total of **8 defects** were identified, documented, and classified.
+| Attribute | Specification | Attribute | Specification |
+|---|---|---|---|
+| **Project / AUT** | Field Force Connect (Web App) | **Evaluation Track** | QA Automation + Manual Machine Test |
+| **Application URL** | `https://test.fieldforceconnect.com/` | **Architecture** | React Vite SPA + RESTful API Backend |
+| **Operating System** | Windows 11 Professional (64-bit) | **Browsers Tested** | Google Chrome 120+, Microsoft Edge 120+ |
+| **Testing Standard** | IEEE 829 Standard for Software Test Documentation | **Document Status** | Submitted for Review |
 
-### Defect Distribution by Severity & Priority
+---
 
-| Severity | High Priority (P1) | Medium Priority (P2) | Low Priority (P3) | Total | Percentage |
+## 2. Defect Classification & Metrics Summary
+
+| Severity Level | Priority 1 (High) | Priority 2 (Medium) | Priority 3 (Low) | Total Defects | Percentage |
 |---|:---:|:---:|:---:|:---:|:---:|
-| **Critical** | 0 | 0 | 0 | **0** | 0% |
-| **Major** | 2 | 3 | 0 | **5** | 62.5% |
-| **Moderate** | 0 | 2 | 0 | **2** | 25.0% |
-| **Minor** | 0 | 0 | 1 | **1** | 12.5% |
-| **Total** | **2** | **5** | **1** | **8** | **100%** |
+| **Major** (High impact on user flow / security / standards) | 2 | 3 | 0 | **5** | 62.5% |
+| **Moderate** (Degraded UX / functional omission) | 0 | 2 | 0 | **2** | 25.0% |
+| **Minor** (Cosmetic / alert timing) | 0 | 0 | 1 | **1** | 12.5% |
+| **TOTAL IDENTIFIED DEFECTS** | **2** | **5** | **1** | **8** | **100.0%** |
 
-### Summary Matrix
+---
 
-| Bug ID | Module | Defect Title | Severity | Priority | Status |
+## 3. Master Defect Summary Register
+
+| Defect ID | Target Module | Defect Summary | Severity | Priority | Status |
 |---|---|---|:---:|:---:|:---:|
-| `BUG_FFC_001` | Authentication | Password maximum length capped at 12 characters restricts secure passwords | Major | P2 | Open |
+| `BUG_FFC_001` | Authentication | Password max length hard-capped at 12 characters (violates NIST standard) | Major | P2 | Open |
 | `BUG_FFC_002` | Login | Absence of Password Visibility (Eye) Toggle on Password fields | Moderate | P3 | Open |
 | `BUG_FFC_003` | Sign with OTP | 4-Digit OTP input does not support clipboard paste across input boxes | Moderate | P2 | Open |
-| `BUG_FFC_004` | Sign Up | Form submit button remains silently disabled without highlighting invalid fields | Major | P2 | Open |
+| `BUG_FFC_004` | Sign Up | Submit button remains silently disabled without highlighting invalid fields | Major | P2 | Open |
 | `BUG_FFC_005` | Forgot Password | Case-sensitivity in Email comparison triggers 'Failed to send OTP' | Major | P1 | Open |
-| `BUG_FFC_006` | Attendance / Punch In | Toast Notification auto-dismiss duration is too brief (< 2 seconds) | Minor | P3 | Open |
-| `BUG_FFC_007` | Add Customer | Mobile Number field allows non-numeric characters on clipboard paste | Major | P2 | Open |
-| `BUG_FFC_008` | Session / Navigation | Session token expiration results in white blank screen without redirect | Major | P1 | Open |
+| `BUG_FFC_006` | Punch In | Toast notification auto-dismiss duration is too brief (< 2 seconds) | Minor | P3 | Open |
+| `BUG_FFC_007` | Add Customer | Mobile Number field accepts non-numeric characters on clipboard paste | Major | P2 | Open |
+| `BUG_FFC_008` | Session / Auth | Session expiration leads to unhandled exception & blank white screen | Major | P1 | Open |
 
 ---
 
-## 2. Detailed Defect Reports
+## 4. Detailed Defect Specifications (Official IEEE 829 Template)
 
 ### Defect 1: `BUG_FFC_001`
-* **Defect Title:** Password maximum length is hard-capped at 12 characters, violating modern password standards
-* **Module:** Authentication (`/auth/login`, `/auth/reset-password`)
-* **Severity:** Major
-* **Priority:** P2
-* **Environment:** Chrome 120+, Windows 11, Web App
-* **Preconditions:** User is on the Login or Reset Password page
-* **Steps to Reproduce:**
-  1. Navigate to `https://test.fieldforceconnect.com/auth/login`
-  2. In the Password input field, enter a strong passphrase longer than 12 characters (e.g., `NimapTechSecure@2026!`)
-  3. Observe inline validation message
-* **Expected Result:** Application should allow passwords up to at least 64 characters (per NIST SP 800-63B standards) to support secure passphrases and password managers.
-* **Actual Result:** Field displays validation error: `Password cannot exceed 12 characters`, blocking secure generated passwords.
-* **Impact:** Users with password managers generating 16-32 character passwords cannot authenticate or register.
-* **Suggested Fix:** Increase password maximum constraint in React validation schema (`maxLength: 64`) and database schema to 64 or 128 characters.
+| Field | Value |
+|---|---|
+| **Defect ID** | **`BUG_FFC_001`** |
+| **Defect Title** | Password maximum length hard-capped at 12 characters |
+| **Module / URL** | Authentication (`/auth/login`, `/auth/reset-password`) |
+| **Defect Type** | Security / Validation Constraint Flaw |
+| **Severity / Priority** | **Major** / **P2** |
+| **Reproducibility** | 100% (Always Reproducible) |
+| **Pre-conditions** | User is on the Login or Reset Password page. |
+| **Test Data Used** | Password: `NimapTechSecure@2026!` (21 characters) |
+| **Steps to Reproduce** | 1. Navigate to `https://test.fieldforceconnect.com/auth/login`<br>2. In Password field, enter a password longer than 12 characters (e.g. `NimapTechSecure@2026!`)<br>3. Observe inline validation message |
+| **Expected Result** | Per NIST SP 800-63B standards, password inputs should allow passphrases up to at least 64 characters to support modern password managers. |
+| **Actual Result** | Inline error displays: `Password cannot exceed 12 characters`. Form submission is blocked for passwords with > 12 characters. |
+| **Technical Remediation** | In React Hook Form rules (`Login-bCrUzcYN.js`), update `maxLength: { value: 64, message: "Password cannot exceed 64 characters" }` and adjust backend hashing schema. |
 
 ---
 
 ### Defect 2: `BUG_FFC_002`
-* **Defect Title:** Absence of Password Visibility Toggle ('Show/Hide Password' eye icon)
-* **Module:** Login (`/auth/login`)
-* **Severity:** Moderate
-* **Priority:** P3
-* **Environment:** Cross-Browser (Chrome, Edge, Firefox)
-* **Preconditions:** User is on `/auth/login`
-* **Steps to Reproduce:**
-  1. Navigate to `https://test.fieldforceconnect.com/auth/login`
-  2. Type a password in the Password field
-  3. Look for an eye icon to preview the entered password
-* **Expected Result:** A clickable eye icon toggle should be present at the end of the password input to allow toggling between masked `type="password"` and plain `type="text"`.
-* **Actual Result:** No visibility toggle icon is available. Input remains strictly masked with dots.
-* **Impact:** Increases login failures due to typos, especially on mobile or touch devices.
-* **Suggested Fix:** Add Material-UI `InputAdornment` with `IconButton` and visibility toggle state in `Login-bCrUzcYN.js`.
+| Field | Value |
+|---|---|
+| **Defect ID** | **`BUG_FFC_002`** |
+| **Defect Title** | Absence of Password Visibility (Eye) Toggle on Password fields |
+| **Module / URL** | Login (`/auth/login`) |
+| **Defect Type** | UI / Usability Flaw |
+| **Severity / Priority** | **Moderate** / **P3** |
+| **Reproducibility** | 100% (Design Omission) |
+| **Pre-conditions** | User is on `/auth/login`. |
+| **Test Data Used** | Password: `P@ssw0rd#2026` |
+| **Steps to Reproduce** | 1. Navigate to `https://test.fieldforceconnect.com/auth/login`<br>2. Type characters into Password input<br>3. Look for an eye icon at the right edge of the field to unmask text |
+| **Expected Result** | An eye icon toggle should allow toggling input visibility between `type="password"` and `type="text"` to prevent typos. |
+| **Actual Result** | No visibility toggle icon is present. Password is permanently masked with bullet points. |
+| **Technical Remediation** | Add Material-UI `InputAdornment` with an `IconButton` containing `Visibility` and `VisibilityOff` icons. |
 
 ---
 
 ### Defect 3: `BUG_FFC_003`
-* **Defect Title:** 4-Digit OTP input does not support pasting full OTP string into the first box
-* **Module:** Sign with OTP (`/auth/otp-verification`)
-* **Severity:** Moderate
-* **Priority:** P2
-* **Environment:** Chrome 120+, Windows 11
-* **Preconditions:** User has requested an OTP and has copied the 4-digit code (`"4821"`) to clipboard
-* **Steps to Reproduce:**
-  1. Navigate to `/auth/otp-verification`
-  2. Right-click or press `Ctrl+V` on the first OTP digit input box
-  3. Observe input distribution across the 4 boxes
-* **Expected Result:** The clipboard string `"4821"` should automatically populate Box 1=`4`, Box 2=`8`, Box 3=`2`, Box 4=`1`, and focus shifts to the submit button.
-* **Actual Result:** Only the first digit `'4'` is pasted into Box 1; remaining digits are discarded.
-* **Impact:** Degraded user experience, forcing users to manually copy/type each character.
-* **Suggested Fix:** Attach `onPaste` event listener to split clipboard text and distribute to index `0..3`.
+| Field | Value |
+|---|---|
+| **Defect ID** | **`BUG_FFC_003`** |
+| **Defect Title** | 4-Digit OTP Input Rejects Clipboard Paste across slots |
+| **Module / URL** | Sign with OTP (`/auth/otp-verification`) |
+| **Defect Type** | Functional / Usability |
+| **Severity / Priority** | **Moderate** / **P2** |
+| **Reproducibility** | 100% |
+| **Pre-conditions** | User requested OTP login and has 4-digit code in clipboard. |
+| **Test Data Used** | Clipboard Text: `"7392"` |
+| **Steps to Reproduce** | 1. Navigate to `/auth/otp-verification`<br>2. Focus the first OTP input digit slot<br>3. Press `Ctrl + V` (or Right-Click > Paste) |
+| **Expected Result** | The 4-character string should distribute across Box 1 ('7'), Box 2 ('3'), Box 3 ('9'), Box 4 ('2'). |
+| **Actual Result** | Only the first character ('7') is pasted into Box 1; characters 2, 3, and 4 are dropped. User must manually type each box. |
+| **Technical Remediation** | Attach an `onPaste` event listener on the OTP input group to capture `e.clipboardData.getData('text')` and set all 4 indices. |
 
 ---
 
 ### Defect 4: `BUG_FFC_004`
-* **Defect Title:** Sign Up Submit button remains silently disabled when optional-looking fields are unfulfilled
-* **Module:** Sign Up (`/auth/register`)
-* **Severity:** Major
-* **Priority:** P2
-* **Environment:** Chrome 120+, Windows 11
-* **Preconditions:** User is on `/auth/register`
-* **Steps to Reproduce:**
-  1. Navigate to `https://test.fieldforceconnect.com/auth/register`
-  2. Enter Company Name, Contact Person Name, Mobile Number, and Email ID
-  3. Leave Timezone or Currency untouched if not pre-selected
-  4. Attempt to click 'Submit' button
-* **Expected Result:** Submit button should either be enabled and highlight invalid fields with red border on click, or show a clear tooltip explaining why it is disabled.
-* **Actual Result:** Submit button is disabled (`disabled={!isValid}`) without feedback, leaving users unsure why form cannot be submitted.
-* **Impact:** Causes drop-offs during onboarding.
-* **Suggested Fix:** Keep button clickable and invoke React Hook Form `trigger()` on click to show error highlights under unfilled fields.
+| Field | Value |
+|---|---|
+| **Defect ID** | **`BUG_FFC_004`** |
+| **Defect Title** | Sign Up Submit Button Silently Disabled without highlighting errors |
+| **Module / URL** | Sign Up / Registration (`/auth/register`) |
+| **Defect Type** | UX / User Onboarding Flaw |
+| **Severity / Priority** | **Major** / **P2** |
+| **Reproducibility** | 100% |
+| **Pre-conditions** | User is on the registration page. |
+| **Test Data Used** | Valid Company, Person, Mobile, Email; Unfilled Dropdowns |
+| **Steps to Reproduce** | 1. Navigate to `https://test.fieldforceconnect.com/auth/register`<br>2. Fill Company Name, Person Name, Mobile Number, and Email ID<br>3. Leave Timezone or Currency untouched if cleared<br>4. Attempt clicking 'Submit' |
+| **Expected Result** | Submit button should remain enabled and trigger visible red error borders/messages highlighting missing fields upon click. |
+| **Actual Result** | Button is rendered as `disabled={!isValid}` without any tooltip or feedback explaining which field is invalid. |
+| **Technical Remediation** | Remove `disabled={!p}` from the submit button; invoke React Hook Form's `trigger()` on submit to reveal errors. |
 
 ---
 
 ### Defect 5: `BUG_FFC_005`
-* **Defect Title:** Case-sensitive Email comparison triggers 'Failed to send OTP' on Forgot Password
-* **Module:** Forgot Password (`/auth/forget-password`)
-* **Severity:** Major
-* **Priority:** P1
-* **Environment:** Chrome 120+, Windows 11
-* **Preconditions:** User is registered with email `tester@fieldforce.com`
-* **Steps to Reproduce:**
-  1. Navigate to `/auth/forget-password`
-  2. In the input box, enter `Tester@fieldforce.com` (with capitalized 'T')
-  3. Click 'Submit'
-* **Expected Result:** System normalizes email to lowercase (`.toLowerCase()`) and sends password reset OTP.
-* **Actual Result:** API returns error and toast displays `Failed to send OTP`.
-* **Impact:** Users who have auto-capitalization on their phone keyboards or enter mixed case emails cannot reset passwords.
-* **Suggested Fix:** Normalize `emailOrMob.trim().toLowerCase()` prior to API dispatch.
+| Field | Value |
+|---|---|
+| **Defect ID** | **`BUG_FFC_005`** |
+| **Defect Title** | Case-Sensitive Email Comparison on Forgot Password triggers error |
+| **Module / URL** | Account Recovery (`/auth/forget-password`) |
+| **Defect Type** | Functional / Account Recovery Failure |
+| **Severity / Priority** | **Major** / **P1** |
+| **Reproducibility** | 100% |
+| **Pre-conditions** | Account exists registered with email `tester@fieldforce.com`. |
+| **Test Data Used** | Input: `Tester@FieldForce.com` (Capitalized) |
+| **Steps to Reproduce** | 1. Navigate to `/auth/forget-password`<br>2. Enter valid registered email with capitalized letters (`Tester@FieldForce.com`)<br>3. Click 'Submit' button |
+| **Expected Result** | RFC 5321 mandates case-insensitive email domain handling. The application must normalize email to lowercase and dispatch reset OTP. |
+| **Actual Result** | Backend API performs case-sensitive match; returns error and toast displays: `Failed to send OTP`. |
+| **Technical Remediation** | Apply `emailOrMob.trim().toLowerCase()` in the submit handler prior to API dispatch. |
 
 ---
 
 ### Defect 6: `BUG_FFC_006`
-* **Defect Title:** Punch In Toast Notification auto-dismiss duration is too brief (< 2 seconds)
-* **Module:** Attendance / Punch In (`/attendance`, `/dashboard`)
-* **Severity:** Minor
-* **Priority:** P3
-* **Environment:** Chrome 120+, Windows 11
-* **Preconditions:** User is logged in and punches in attendance
-* **Steps to Reproduce:**
-  1. Click 'Punch In' button
-  2. Observe the success toast popup alert
-* **Expected Result:** Toast alert should persist for 4-5 seconds and provide a close 'X' button or progress bar.
-* **Actual Result:** Toast disappears in under 2 seconds, making it easy for users on slow connections to miss confirmation.
-* **Impact:** Users are unsure if punch-in succeeded and may repeatedly click the action.
-* **Suggested Fix:** Increase `react-hot-toast` or toast duration setting to `4000ms`.
+| Field | Value |
+|---|---|
+| **Defect ID** | **`BUG_FFC_006`** |
+| **Defect Title** | Toast Notification Dismissal Too Rapid (< 2 seconds) on Punch In |
+| **Module / URL** | Attendance / Punch In (`/dashboard`, `/attendance`) |
+| **Defect Type** | UI / Usability |
+| **Severity / Priority** | **Minor** / **P3** |
+| **Reproducibility** | 100% |
+| **Pre-conditions** | User is authenticated and on Dashboard. |
+| **Test Data Used** | Standard Punch In Action |
+| **Steps to Reproduce** | 1. Navigate to Dashboard<br>2. Click 'Punch In' button and confirm<br>3. Observe duration of the confirmation popup toast |
+| **Expected Result** | Toast notification should remain visible for 4-5 seconds and provide a dismiss button. |
+| **Actual Result** | Toast notification auto-dismisses in under 1.8 seconds, causing users to miss confirmation. |
+| **Technical Remediation** | Configure React Hot Toast duration: `toast.success("Punch In Successful", { duration: 4000 });`. |
 
 ---
 
 ### Defect 7: `BUG_FFC_007`
-* **Defect Title:** Add Customer Mobile Number field allows non-numeric characters on clipboard paste
-* **Module:** Customer Management (`/customers`)
-* **Severity:** Major
-* **Priority:** P2
-* **Environment:** Chrome 120+, Windows 11
-* **Preconditions:** User is logged in and opens the Add Customer drawer
-* **Steps to Reproduce:**
-  1. Navigate to `/customers`
-  2. Click 'Actions' -> 'New Customer'
-  3. Copy string `"98765-ABC-12"` to clipboard
-  4. Paste into the Mobile Number input field
-  5. Click 'Submit'
-* **Expected Result:** The paste event should sanitize non-numeric characters or display an inline error `Mobile Number must contain digits only`.
-* **Actual Result:** Non-numeric characters remain in the input field until form submission fails with a generic server error.
-* **Impact:** Corrupted phone data submitted to backend leads to unhandled API 500 errors.
-* **Suggested Fix:** Add regex input sanitizer `value.replace(/\D/g, '')` on paste/change handler.
+| Field | Value |
+|---|---|
+| **Defect ID** | **`BUG_FFC_007`** |
+| **Defect Title** | Mobile Number Field Accepts Non-Numeric Characters on Paste in Add Customer |
+| **Module / URL** | Customer Management (`/customers`) |
+| **Defect Type** | Input Validation / Data Integrity |
+| **Severity / Priority** | **Major** / **P2** |
+| **Reproducibility** | 100% |
+| **Pre-conditions** | User is logged in and opens the Add Customer form. |
+| **Test Data Used** | Pasted String: `"98765-ABC-12"` |
+| **Steps to Reproduce** | 1. Navigate to `/customers` and click 'Actions' > 'New Customer'<br>2. Copy string `"98765-ABC-12"` to clipboard<br>3. Paste into Mobile Number field and click Submit |
+| **Expected Result** | Paste event should sanitize non-digit characters or display: `Mobile Number must contain digits only`. |
+| **Actual Result** | Field accepts non-numeric characters on paste; submitting form triggers unhandled API 500 error. |
+| **Technical Remediation** | Add input sanitizer on change/paste: `e.target.value = e.target.value.replace(/\D/g, '')`. |
 
 ---
 
 ### Defect 8: `BUG_FFC_008`
-* **Defect Title:** Expired session token leads to blank white screen instead of redirecting to Login
-* **Module:** Session Management & Routing
-* **Severity:** Major
-* **Priority:** P1
-* **Environment:** Chrome 120+, Windows 11
-* **Preconditions:** User has an active tab on Dashboard, and auth cookie expires or is cleared
-* **Steps to Reproduce:**
-  1. Log into Dashboard
-  2. Clear `currentUser` cookie in DevTools or wait for token expiry
-  3. Click any navigation link (e.g., 'Customers' or 'Attendance')
-* **Expected Result:** React Router Auth Guard catches HTTP 401 and smoothly navigates user to `/auth/login?returnUrl=/customers`.
-* **Actual Result:** Application crashes to an unhandled exception state showing a blank white screen with console error `TypeError: Cannot read properties of null (reading 'roles')`.
-* **Impact:** User is forced to manually clear cache or hard-refresh the URL to regain access.
-* **Suggested Fix:** Wrap Root component with React Error Boundary and handle 401 response interceptor in Axios instance.
+| Field | Value |
+|---|---|
+| **Defect ID** | **`BUG_FFC_008`** |
+| **Defect Title** | Expired Session Token Leads to Unhandled Exception & Blank White Screen |
+| **Module / URL** | Session Management & Routing |
+| **Defect Type** | Unhandled Exception / Routing Crash |
+| **Severity / Priority** | **Major** / **P1** |
+| **Reproducibility** | 100% |
+| **Pre-conditions** | User is on Dashboard; auth session cookie expires or is cleared. |
+| **Test Data Used** | Expired/Null Auth Session Cookie |
+| **Steps to Reproduce** | 1. Log into Dashboard<br>2. Clear `currentUser` cookie in DevTools to simulate session expiration<br>3. Click any navigation menu link (e.g. 'Customers') |
+| **Expected Result** | Application catches 401 Unauthorized and smoothly redirects to `/auth/login?returnUrl=/customers`. |
+| **Actual Result** | Application crashes to a blank white screen with console error: `TypeError: Cannot read properties of null (reading 'roles')`. |
+| **Technical Remediation** | Implement React Error Boundary around root routes and add an Axios 401 response interceptor to redirect cleanly. |
 
 ---
 
-## 3. General Quality Recommendations
-1. **Adopt NIST SP 800-63B Guidelines:** Remove the 12-character password upper limit and implement passphrase support.
-2. **Standardize Input Sanitation:** Normalize all email inputs with `.trim().toLowerCase()` consistently on both client and server layers.
-3. **Enhance User Feedback:** Ensure form submit buttons are either accompanied by field error tooltips or keep buttons clickable and trigger instant validation highlighting.
-4. **Resilience & Error Boundaries:** Implement global React Error Boundaries to prevent blank screen crashes on expired auth tokens.
+## 5. Quality Sign-Off & Recommendations
+
+| Role | Name | Assessment Date | Status |
+|---|---|---|---|
+| **Lead QA Tester** | Candidate (Automation & Manual QA) | November 24, 2026 | Sign-Off Complete |
+
+**Overall Assessment:** Core functional workflows (Login, PunchIn, Add Customer) have been automated and verified. High-priority remediations are recommended for Bug 005 (Case-sensitive email) and Bug 008 (Session expiry crash) before production deployment.
