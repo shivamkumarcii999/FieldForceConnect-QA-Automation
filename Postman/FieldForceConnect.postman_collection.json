@@ -1,0 +1,324 @@
+{
+  "info": {
+    "_postman_id": "98a12bc4-34de-4f56-8a90-123456789abc",
+    "name": "Field Force Connect - API Automation Suite",
+    "description": "Comprehensive Postman API Test Collection for Field Force Connect (Nimap QA Machine Test).\nCovers Environment Setup, Authentication token handling, Valid/Invalid Login journeys, and Adding a Customer.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication Modules",
+      "item": [
+        {
+          "name": "1. Login with Valid Credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is within acceptable SLA (< 2000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "pm.test(\"Verify authentication response body\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an(\"object\");",
+                  "    ",
+                  "    // Check success or presence of access token/user details",
+                  "    if (jsonData.success !== undefined) {",
+                  "        pm.expect(jsonData.success).to.be.true;",
+                  "    }",
+                  "    ",
+                  "    // Extract and set auth tokens to environment",
+                  "    var token = jsonData.access_token || jsonData.token || jsonData.accessToken || jsonData.referralToken;",
+                  "    if (token) {",
+                  "        pm.environment.set(\"authToken\", \"Bearer \" + token);",
+                  "        console.log(\"Saved authToken to environment\");",
+                  "    } else {",
+                  "        // Basic auth fallback header",
+                  "        var basicAuth = \"Basic \" + btoa(pm.environment.get(\"validUsername\") + \":\" + pm.environment.get(\"validPassword\"));",
+                  "        pm.environment.set(\"authToken\", basicAuth);",
+                  "    }",
+                  "    ",
+                  "    if (jsonData.userId) {",
+                  "        pm.environment.set(\"userId\", jsonData.userId);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{validUsername}}\",\n  \"password\": \"{{validPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Account/Login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Account",
+                "Login"
+              ]
+            },
+            "description": "Authenticates valid user and saves authToken and userId into environment variables for subsequent requests."
+          },
+          "response": []
+        },
+        {
+          "name": "2. Login with Invalid Credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code indicates authentication failure (400, 401, or 200 with error)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 400, 401]);",
+                  "});",
+                  "",
+                  "pm.test(\"Verify error payload returned for invalid login\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200) {",
+                  "        pm.expect(jsonData.success).to.be.false;",
+                  "        pm.expect(jsonData.errormessage || jsonData.error || jsonData.message).to.not.be.empty;",
+                  "    } else {",
+                  "        pm.expect(jsonData).to.have.property(\"error\").or.have.property(\"message\");",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{invalidUsername}}\",\n  \"password\": \"{{invalidPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Account/Login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Account",
+                "Login"
+              ]
+            },
+            "description": "Validates API behavior when incorrect credentials are submitted."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Master Data & Configuration (GET APIs)",
+      "item": [
+        {
+          "name": "3. GET Country List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Verify country list array is returned\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an(\"array\");",
+                  "    pm.expect(jsonData.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test(\"Verify default country India (Code 101, +91) exists\", function () {",
+                  "    var countries = pm.response.json();",
+                  "    var india = countries.find(c => c.CountryCode === \"+91\" || c.CountryId === 101 || c.Name === \"India\");",
+                  "    pm.expect(india).to.not.be.undefined;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Account/GetCountryList",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Account",
+                "GetCountryList"
+              ]
+            },
+            "description": "Retrieves the list of countries, country codes, and dial codes for registration and customer management."
+          },
+          "response": []
+        },
+        {
+          "name": "4. GET Customer Stages / Lead Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Verify Lead Status master list returned\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an(\"array\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authToken}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/CRM/LeadStatus",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "CRM",
+                "LeadStatus"
+              ]
+            },
+            "description": "Fetches the customer status stages used when populating the Add Customer dropdown."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Customer Management (POST APIs)",
+      "item": [
+        {
+          "name": "5. Add Customer from Dashboard Page",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generate random customer name to prevent duplicates",
+                  "var randomSuffix = Math.floor(Math.random() * 90000) + 10000;",
+                  "pm.variables.set(\"dynamicCustomerName\", pm.environment.get(\"newCustomerName\") + \" - \" + randomSuffix);",
+                  "pm.variables.set(\"dynamicMobile\", \"98\" + (Math.floor(Math.random() * 90000000) + 10000000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 201 Created\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Verify Customer Added successfully in response\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an(\"object\");",
+                  "    ",
+                  "    if (jsonData.Message) {",
+                  "        pm.expect(jsonData.Message).to.include(\"Success\");",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"LeadName\": \"{{dynamicCustomerName}}\",\n  \"PersonName\": \"{{contactPersonName}}\",\n  \"MobileNo\": \"{{dynamicMobile}}\",\n  \"Email\": \"{{contactEmail}}\",\n  \"Address\": \"{{address}}\",\n  \"CountryId\": 101,\n  \"StateId\": 1,\n  \"CityId\": 1,\n  \"LeadSourceId\": 1,\n  \"LeadStageId\": 1,\n  \"LeadTypeId\": 1,\n  \"IsVisibleToAll\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/CRM/AddLead",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "CRM",
+                "AddLead"
+              ]
+            },
+            "description": "Creates a new customer / lead entry from the dashboard using the authenticated session variable."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+target/
+*.class
+
+# Log files
+*.log
+logs/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# TestNG output
+test-output/
+test-output-old/
+
+# ExtentReports generated artifacts (optional, keep directory clean)
+reports/screenshots/
+*.tmp
